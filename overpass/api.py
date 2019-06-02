@@ -19,6 +19,7 @@ from .errors import (
     ServerRuntimeError,
 )
 
+
 class API(object):
     """A simple Python wrapper for the OpenStreetMap Overpass API."""
 
@@ -176,13 +177,16 @@ class API(object):
                     geometry = geojson.Point((elem["lon"], elem["lat"]))
                 elif elem_type == "way":
                     points = []
-                    for coords in elem["geometry"]:
-                        points.append((coords["lon"], coords["lat"]))
+                    geom = elem.get("geometry", None)
+                    if geom:
+                        for coords in geom:
+                            points.append((coords["lon"], coords["lat"]))
                     geometry = geojson.LineString(points)
                 feature = geojson.Feature(
                     id=elem["id"],
                     geometry=geometry,
-                    properties=elem.get("tags"))
+                    properties=elem.get("tags")
+                )
                 features.append(feature)
             elif elem_type == "relation":
                 # initialize result lists
